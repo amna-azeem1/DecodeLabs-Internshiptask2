@@ -14,126 +14,172 @@ st.set_page_config(
 )
 
 # ==================================================
+# DESIGN TOKENS (single source of truth for the palette)
+# ==================================================
+PRIMARY = "#2563EB"
+PRIMARY_DARK = "#1D4ED8"
+BG = "#F8FAFC"
+SUCCESS = "#16A34A"
+SUCCESS_BG = "#DCFCE7"
+TEXT = "#111827"
+TEXT_SECONDARY = "#6B7280"
+BORDER = "#E5E7EB"
+
+# ==================================================
 # CUSTOM STYLING
 # ==================================================
-st.markdown("""
+st.markdown(f"""
     <style>
-        /* ---------- Block container: fix padding to a known value so the
-           header's negative margin below can cancel it out exactly,
-           stretching the header edge-to-edge across the main panel. ---------- */
-        .main .block-container {
-            padding-left: 2.5rem !important;
-            padding-right: 2.5rem !important;
-            padding-top: 1.5rem !important;
-            max-width: 100% !important;
-        }
+        .stApp {{
+            background-color: {BG};
+        }}
 
-        /* ---------- Header bar (stretches full width, no icon) ---------- */
-        .top-header {
-            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
-            border-radius: 0px;
-            padding: 1.6rem 2.5rem;
-            margin: -1.5rem -2.5rem 1.8rem -2.5rem;
-            width: calc(100% + 5rem);
+        /* ---------- Hero (compact bar, not a tall block) ---------- */
+        .hero {{
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0px 4px 14px rgba(37, 99, 235, 0.25);
-        }
-        .top-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .top-header h1 {
-            color: white;
-            font-size: 1.7rem;
-            font-weight: 700;
+            align-items: baseline;
+            gap: 12px;
+            padding: 0.9rem 1.2rem;
+            background: white;
+            border: 1px solid {BORDER};
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.03);
+        }}
+        .hero h1 {{
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: {TEXT};
             margin: 0;
-            line-height: 1.2;
-        }
-        .top-header p {
-            color: #dbeafe;
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+        }}
+        .hero p {{
+            color: {TEXT_SECONDARY};
             font-size: 0.9rem;
-            margin: 2px 0 0 0;
-        }
+            margin: 0;
+        }}
 
-        /* ---------- Section headings ---------- */
-        .subtitle {
-            text-align: left;
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-top: 0px;
-            margin-bottom: 1.2rem;
-        }
-        .footer {
-            text-align: center;
-            color: #9ca3af;
-            font-size: 0.85rem;
-            margin-top: 3rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-        }
+        /* ---------- Generic card (for atomic HTML-only blocks) ---------- */
+        .card {{
+            background: white;
+            border: 1px solid {BORDER};
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.04);
+        }}
+        .sidebar-card {{
+            background: white;
+            border: 1px solid {BORDER};
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.03);
+        }}
+        .sidebar-card-title {{
+            font-weight: 700;
+            color: {TEXT};
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+        }}
+        .sidebar-card p {{
+            color: {TEXT_SECONDARY};
+            font-size: 0.88rem;
+            margin: 0;
+            line-height: 1.5;
+        }}
 
-        /* ---------- Buttons (force blue, override red primary theme) ---------- */
+        /* ---------- Streamlit's real bordered container (used for cards
+           that hold live widgets — sliders, buttons, metrics). This is the
+           supported way to get an actual bordered box that wraps its
+           children, so it never renders as an empty box. ---------- */
+        div[data-testid="stVerticalBlockBorderWrapper"] {{
+            border-radius: 16px !important;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.04);
+        }}
+
+        /* ---------- Buttons ---------- */
         div.stButton > button,
-        button[kind="primary"] {
+        button[kind="primary"] {{
             width: 100%;
             font-weight: 600;
-            padding: 0.6rem 0;
-            border-radius: 8px;
-            background-color: #2563eb !important;
-            border-color: #2563eb !important;
+            padding: 0.7rem 0;
+            border-radius: 12px !important;
+            background: linear-gradient(135deg, {PRIMARY} 0%, {PRIMARY_DARK} 100%) !important;
+            border: none !important;
             color: white !important;
-        }
+            box-shadow: 0px 4px 12px rgba(37, 99, 235, 0.3);
+            transition: all 0.15s ease-in-out;
+        }}
         div.stButton > button:hover,
-        button[kind="primary"]:hover {
-            background-color: #1d4ed8 !important;
-            border-color: #1d4ed8 !important;
-        }
+        button[kind="primary"]:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0px 6px 16px rgba(37, 99, 235, 0.4) !important;
+        }}
 
-        /* ---------- Sliders: force blue theme (override default red) ---------- */
-        div[data-baseweb="slider"] > div > div:nth-child(2) {
-            background: #2563eb !important;
-        }
-        div[data-baseweb="slider"] div[role="slider"] {
-            background-color: #2563eb !important;
-            border-color: #2563eb !important;
+        /* ---------- Sliders: blue theme ---------- */
+        div[data-baseweb="slider"] > div > div:nth-child(2) {{
+            background: {PRIMARY} !important;
+        }}
+        div[data-baseweb="slider"] div[role="slider"] {{
+            background-color: {PRIMARY} !important;
+            border-color: {PRIMARY} !important;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
-        }
-        div[data-testid="stTickBarMin"], div[data-testid="stTickBarMax"] {
-            color: #6b7280 !important;
-        }
+        }}
 
-        /* ---------- Icon + text row: perfect vertical alignment ---------- */
-        .icon-row {
+        /* ---------- Custom progress bars ---------- */
+        .progress-row {{
+            margin-bottom: 16px;
+        }}
+        .progress-label-row {{
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 6px 0;
-            min-height: 28px;
-        }
-        .icon-row img {
-            flex-shrink: 0;
-            display: block;
-        }
-        .icon-row .icon-row-label {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            line-height: 1.2;
-        }
-        .icon-row .icon-row-label h1,
-        .icon-row .icon-row-label h2,
-        .icon-row .icon-row-label h3,
-        .icon-row .icon-row-label h4,
-        .icon-row .icon-row-label p,
-        .icon-row .icon-row-label b,
-        .icon-row .icon-row-label span {
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }}
+        .progress-track {{
+            background: #E5E7EB;
+            border-radius: 8px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+        }}
+        .progress-fill {{
+            height: 100%;
+            border-radius: 8px;
+        }}
+
+        /* ---------- Stat cards ---------- */
+        .stat-card {{
+            background: white;
+            border: 1px solid {BORDER};
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.04);
+        }}
+        .stat-label {{
+            color: {TEXT_SECONDARY};
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 0 0 6px 0;
+        }}
+        .stat-value {{
+            color: {TEXT};
+            font-size: 1.7rem;
+            font-weight: 800;
             margin: 0;
-            padding: 0;
-            line-height: 1.2;
-        }
+        }}
+
+        /* ---------- Footer ---------- */
+        .footer {{
+            text-align: center;
+            color: {TEXT_SECONDARY};
+            font-size: 0.85rem;
+            margin-top: 3rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid {BORDER};
+            line-height: 1.6;
+        }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -163,6 +209,12 @@ FLOWER_IMAGES = {
     "Virginica": "assets/virginica.jfif"
 }
 
+FLOWER_COLORS = {
+    "Setosa": "#2563EB",
+    "Versicolor": "#7C3AED",
+    "Virginica": "#DB2777",
+}
+
 FEATURE_COLUMNS = [
     "sepal length (cm)",
     "sepal width (cm)",
@@ -170,13 +222,16 @@ FEATURE_COLUMNS = [
     "petal width (cm)"
 ]
 
-ICON_SIZE = 24  # single consistent icon size used everywhere
+# Static reporting values (not recomputed at runtime — reflects your
+# training script's held-out test accuracy)
+ACCURACY_DISPLAY = "96.67%"
+K_VALUE = getattr(model, "n_neighbors", "N/A")
 
 
 @st.cache_data
 def image_to_base64(path: str):
     """Read an image file and return a base64 data URI for inline HTML use.
-    Returns None (instead of crashing) if the file can't be found/read."""
+    Returns None if the file can't be found/read."""
     try:
         ext = Path(path).suffix.lstrip(".").lower()
         if ext == "svg":
@@ -192,33 +247,43 @@ def image_to_base64(path: str):
         return None
 
 
-def icon_text_row(image_path: str, label_html: str, icon_size: int = ICON_SIZE, rounded: bool = True):
-    """Render a small icon and text on the exact same line, vertically centered.
-    rounded=True crops photos into a circle; rounded=False keeps logos/icons uncropped.
-    If the image can't be loaded, shows the text anyway plus a small warning
-    so a missing file is obvious instead of silently breaking the layout."""
-    img_b64 = image_to_base64(image_path)
-
-    if img_b64 is None:
-        st.warning(f"⚠️ Icon not found: `{image_path}` — check the file exists in your assets folder.")
-        st.markdown(label_html, unsafe_allow_html=True)
-        return
-
-    img_style = (
-        f"width:{icon_size}px; height:{icon_size}px; object-fit:cover; border-radius:50%;"
-        if rounded else
-        f"width:{icon_size}px; height:{icon_size}px; object-fit:contain;"
-    )
-    # NOTE: fixed alignment — both the icon and the label now live inside a
-    # single flexbox (.icon-row) with align-items:center, so icons of the
-    # same ICON_SIZE always line up with text regardless of heading tag
-    # (h3/h4/b/span all get margin/line-height reset via CSS above).
+def sidebar_card(title: str, content_html: str):
+    """One atomic HTML block per card — title + content in a single
+    st.markdown call, so it always renders as a real self-contained box
+    (never an empty div)."""
     st.markdown(
         f"""
-        <div class="icon-row">
-            <img src="{img_b64}" style="{img_style}">
-            <div class="icon-row-label">
-                {label_html}
+        <div class="sidebar-card">
+            <p class="sidebar-card-title">{title}</p>
+            <p>{content_html}</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def stat_card(label: str, value: str):
+    st.markdown(
+        f"""
+        <div class="stat-card">
+            <p class="stat-label">{label}</p>
+            <p class="stat-value">{value}</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def progress_bar(label: str, pct: float, color: str):
+    st.markdown(
+        f"""
+        <div class="progress-row">
+            <div class="progress-label-row">
+                <span style="font-weight:600; color:{TEXT};">{label}</span>
+                <span style="color:{TEXT_SECONDARY}; font-weight:500;">{pct:.1f}%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" style="width:{pct}%; background:{color};"></div>
             </div>
         </div>
         """,
@@ -226,183 +291,167 @@ def icon_text_row(image_path: str, label_html: str, icon_size: int = ICON_SIZE, 
     )
 
 # ==================================================
-# TOP HEADER BAR (full-width, no icon)
+# HEADER BAR (compact, single-line)
 # ==================================================
 st.markdown(
     """
-    <div class="top-header">
-        <div class="top-header-left">
-            <div>
-                <h1>IRIS FLOWER SPECIES CLASSIFIER</h1>
-                <p>Predict the species of an iris flower using a K-Nearest Neighbors model</p>
-            </div>
-        </div>
+    <div class="hero">
+        <h1>Iris Flower Classifier</h1>
+        <p>AI-powered flower species prediction using K-Nearest Neighbors</p>
     </div>
     """,
     unsafe_allow_html=True
 )
 
 # ==================================================
-# SIDEBAR — INFO PANEL + DATASET (moved here from main area)
+# SIDEBAR
 # ==================================================
 with st.sidebar:
-    icon_text_row("assets/info.svg", "<h3>About</h3>", icon_size=24, rounded=False)
-
-    st.write(
-        "This app classifies iris flowers into one of three species "
-        "based on four physical measurements, using a trained "
-        "**K-Nearest Neighbors (KNN)** model."
+    st.markdown(
+        f"<p style='font-size:1.3rem; font-weight:800; color:{TEXT}; margin-bottom:1.2rem;'> Iris AI</p>",
+        unsafe_allow_html=True
     )
 
-    st.divider()
-    st.subheader("Species")
-
-    for name in FLOWER_NAMES:
-        icon_text_row(FLOWER_IMAGES[name], f"<b>{name}</b>", icon_size=26)
-
-    
-    st.divider()
-
-    # ---- Dataset section, moved from main body into the sidebar ----
-    icon_text_row(
-        "assets/database.svg",
-        "<h4>Dataset</h4>",
-        icon_size=22,
-        rounded=False
+    sidebar_card(
+        "About",
+        "This application predicts the species of an Iris flower using a trained KNN model."
     )
 
-    st.info("""
-**150 Flower Samples**
+    sidebar_card(
+        "Dataset",
+        "150 Samples<br>3 Species<br>4 Features"
+    )
 
-**3 Species**
-
-**4 Features**
-""")
-    st.divider()
-    st.caption("Model: KNeighborsClassifier • Scaler: StandardScaler")
+    sidebar_card(
+        "Model",
+        f"KNN (K={K_VALUE})<br>Accuracy: {ACCURACY_DISPLAY}"
+    )
 
 # ==================================================
-# MAIN LAYOUT — Measurements form (left) beside Prediction (right)
+# MAIN LAYOUT — Measurements (left) beside Prediction (right)
 # ==================================================
 main_left, main_right = st.columns([1, 1], gap="large")
 
 # --------------------------------------------------
-# LEFT COLUMN: Enter Flower Measurements
+# LEFT: Flower Measurements (real bordered container — holds live widgets)
 # --------------------------------------------------
 with main_left:
-    st.subheader("Enter Flower Measurements")
-    st.markdown('<p class="subtitle">Use the sliders to set each value.</p>', unsafe_allow_html=True)
 
-    sepal_length = st.slider(
-        "Sepal Length (cm)", min_value=4.3, max_value=7.9, value=5.1, step=0.1
-    )
-    sepal_width = st.slider(
-        "Sepal Width (cm)", min_value=2.0, max_value=4.4, value=3.5, step=0.1
-    )
-    petal_length = st.slider(
-        "Petal Length (cm)", min_value=1.0, max_value=6.9, value=1.4, step=0.1
-    )
-    petal_width = st.slider(
-        "Petal Width (cm)", min_value=0.1, max_value=2.5, value=0.2, step=0.1
-    )
+    st.markdown("""
+    <style>
+    div[data-testid="stVerticalBlock"]:has(div.measurement-card){
+        background:#f3f4f6;
+        border:1px solid #e5e7eb;
+        border-radius:18px;
+        padding:22px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.06);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="measurement-card"></div>', unsafe_allow_html=True)
+
+    st.subheader("Flower Measurements")
+    st.caption("Adjust the sliders to describe the flower.")
+
+    sepal_length = st.slider("Sepal Length (cm)", 4.3, 7.9, 5.1, 0.1)
+    sepal_width = st.slider("Sepal Width (cm)", 2.0, 4.4, 3.5, 0.1)
+    petal_length = st.slider("Petal Length (cm)", 1.0, 6.9, 1.4, 0.1)
+    petal_width = st.slider("Petal Width (cm)", 0.1, 2.5, 0.2, 0.1)
 
     st.write("")
     predict_clicked = st.button("Predict Species", type="primary")
 
 # --------------------------------------------------
-# RIGHT COLUMN: Prediction
+# RIGHT: Prediction Result (real bordered container)
 # --------------------------------------------------
+predicted_species = None
+probabilities = None
+sample = None
+
 with main_right:
-    st.subheader("Prediction")
+    with st.container(border=True):
+        st.subheader("Prediction Result")
 
-    if not predict_clicked:
-        st.markdown(
-            '<p class="subtitle">Set the measurements on the left and click '
-            '<b>Predict Species</b> to see the result here.</p>',
-            unsafe_allow_html=True
-        )
+        if not predict_clicked:
+            st.caption("Set the measurements on the left and click **Predict Species** to see results here.")
+        else:
+            sample = pd.DataFrame(
+                [[sepal_length, sepal_width, petal_length, petal_width]],
+                columns=FEATURE_COLUMNS
+            )
+            sample_scaled = scaler.transform(sample)
+            prediction = model.predict(sample_scaled)[0]
+            predicted_species = FLOWER_NAMES[prediction]
+
+            confidence = None
+            if hasattr(model, "predict_proba"):
+                proba = model.predict_proba(sample_scaled)[0]
+                probabilities = {FLOWER_NAMES[i]: float(p) * 100 for i, p in enumerate(proba)}
+                confidence = probabilities[predicted_species]
+
+            result_img_b64 = image_to_base64(FLOWER_IMAGES[predicted_species])
+            if not result_img_b64:
+                st.warning(f"⚠️ Image not found: `{FLOWER_IMAGES[predicted_species]}` — check your assets folder.")
+
+            img_html = (
+                f'<img src="{result_img_b64}" style="width:100%; max-width:280px; height:280px; '
+                f'object-fit:cover; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,0.12);">'
+                if result_img_b64 else ""
+            )
+            confidence_html = (
+                f'<p style="color:{TEXT_SECONDARY}; margin:16px 0 2px 0; font-size:0.9rem;">Confidence</p>'
+                f'<p style="font-size:2.1rem; font-weight:800; color:{PRIMARY}; margin:0;">{confidence:.1f}%</p>'
+                if confidence is not None else ""
+            )
+
+            st.markdown(
+                f"""
+                <div style="text-align:center;">
+                    {img_html}
+                    <h2 style="font-size:1.9rem; font-weight:800; color:{TEXT}; margin:16px 0 6px 0;">
+                        {predicted_species}
+                    </h2>
+                    <span style="display:inline-flex; align-items:center; gap:6px;
+                                 background:{SUCCESS_BG}; color:{SUCCESS}; font-weight:600;
+                                 padding:6px 16px; border-radius:999px; font-size:0.85rem;">
+                        Prediction Successful
+                    </span>
+                    {confidence_html}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            with st.expander("View entered measurements"):
+                st.dataframe(sample, use_container_width=True, hide_index=True)
+
+# ==================================================
+# CONFIDENCE BREAKDOWN (full width, custom progress bars)
+# ==================================================
+st.write("")
+st.subheader("Confidence Breakdown")
+
+with st.container(border=True):
+    if probabilities is None:
+        st.caption("Run a prediction above to see the confidence breakdown for each species.")
     else:
-        sample = pd.DataFrame(
-            [[sepal_length, sepal_width, petal_length, petal_width]],
-            columns=FEATURE_COLUMNS
-        )
+        sorted_probs = sorted(probabilities.items(), key=lambda x: x[1], reverse=True)
+        for species, pct in sorted_probs:
+            progress_bar(species, pct, FLOWER_COLORS[species])
 
-        sample_scaled = scaler.transform(sample)
-        prediction = model.predict(sample_scaled)[0]
-        predicted_species = FLOWER_NAMES[prediction]
+# ==================================================
+# STATISTICS ROW
+# ==================================================
+st.write("")
+stat_col1, stat_col2, stat_col3 = st.columns(3)
 
-        # Result card — image, heading and caption are all embedded in ONE
-        # HTML block so they actually render inside the styled green box
-        # (a separate st.image() call would render outside the div).
-        result_img_b64 = image_to_base64(FLOWER_IMAGES[predicted_species])
-        if not result_img_b64:
-            st.warning(f"⚠️ Icon not found: `{FLOWER_IMAGES[predicted_species]}` — check the file exists in your assets folder.")
-        result_img_html = (
-            f"""<img src="{result_img_b64}" style="
-                    width:200px;
-                    height:200px;
-                    object-fit:cover;
-                    border-radius:14px;
-                    display:block;
-                    margin:0 auto;
-                ">"""
-            if result_img_b64 else ""
-        )
-        st.markdown(
-            f"""
-            <div style="
-                background:#f0fdf4;
-                border:1px solid #bbf7d0;
-                border-radius:18px;
-                padding:24px;
-                text-align:center;
-                box-shadow:0px 4px 12px rgba(0,0,0,0.08);
-            ">
-                {result_img_html}
-                <h2 style="color:#166534; margin:14px 0 4px 0;">
-                    {predicted_species}
-                </h2>
-                <p style="color:#4b5563; margin:0;">
-                    Predicted Species
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.success("Model Accuracy: 96.67%")
-
-        # Confidence scores, if the model supports it
-        if hasattr(model, "predict_proba"):
-            st.write("")
-            st.subheader("Confidence Breakdown")
-
-            probabilities = model.predict_proba(sample_scaled)[0]
-            highest = probabilities.max()
-
-            st.metric("Prediction Confidence", f"{highest:.1%}")
-
-            prob_df = pd.DataFrame({
-                "Species": FLOWER_NAMES,
-                "Confidence": probabilities
-            }).sort_values("Confidence", ascending=False)
-
-            st.bar_chart(prob_df.set_index("Species"))
-
-            # Icon + species name + confidence, on one aligned line using the
-            # flexbox helper (avoids the misalignment st.columns caused).
-            for _, row in prob_df.iterrows():
-                label_html = (
-                    f"<div style='display:flex; justify-content:space-between; width:100%;'>"
-                    f"<b>{row['Species']}</b>"
-                    f"<span style='color:#4b5563;'>{row['Confidence']:.1%}</span>"
-                    f"</div>"
-                )
-                icon_text_row(FLOWER_IMAGES[row["Species"]], label_html, icon_size=26)
-
-        # Entered values recap
-        with st.expander("View entered measurements"):
-            st.dataframe(sample, use_container_width=True, hide_index=True)
+with stat_col1:
+    stat_card("Accuracy", ACCURACY_DISPLAY)
+with stat_col2:
+    stat_card("K Value", str(K_VALUE))
+with stat_col3:
+    stat_card("Dataset", "150 Samples")
 
 # ==================================================
 # FOOTER
@@ -410,8 +459,8 @@ with main_right:
 st.markdown(
     """
     <div class="footer">
-        Built using Python, Streamlit & Scikit-learn<br>
-        Iris Flower Species Classification
+        Built using Python • Streamlit • Scikit-learn<br>
+        © 2026 Amna Azeem
     </div>
     """,
     unsafe_allow_html=True
