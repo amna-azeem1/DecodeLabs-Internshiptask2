@@ -123,7 +123,7 @@ streamlit run app.py
 ---
 
 ## Author
-Amna Azeem
+
 
 **Amna Azeem**
 
